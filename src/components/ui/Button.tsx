@@ -14,6 +14,7 @@ interface ButtonProps {
   rel?: string;
   download?: string;
   type?: "button" | "submit" | "reset";
+  disabled?: boolean;
 }
 
 export default function Button({
@@ -27,6 +28,7 @@ export default function Button({
   rel,
   download,
   type,
+  disabled = false,
 }: ButtonProps) {
   const base =
     "inline-flex items-center justify-center gap-2 rounded-full font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-burgundy/50";
@@ -43,7 +45,7 @@ export default function Button({
     lg: "px-8 py-4 text-lg",
   };
 
-  const classes = cn(base, variants[variant], sizes[size], className);
+  const classes = cn(base, variants[variant], sizes[size], className, disabled && "opacity-50 cursor-not-allowed pointer-events-none");
 
   const MotionTag = href ? motion.a : motion.button;
 
@@ -56,8 +58,12 @@ export default function Button({
   if (type) {
     extraProps.type = type;
   }
+  if (!href) {
+    extraProps.disabled = disabled;
+  }
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
+    if (disabled) return;
     if (onClick) onClick();
     if (download && href) {
       e.preventDefault();
@@ -72,8 +78,8 @@ export default function Button({
 
   return (
     <MotionTag
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={disabled ? undefined : { scale: 1.02 }}
+      whileTap={disabled ? undefined : { scale: 0.98 }}
       className={classes}
       onClick={handleClick}
       {...extraProps}
