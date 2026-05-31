@@ -52,18 +52,30 @@ export default function Button({
     extraProps.href = href;
     extraProps.target = target;
     extraProps.rel = rel;
-    extraProps.download = download;
   }
   if (type) {
     extraProps.type = type;
   }
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
+    if (onClick) onClick();
+    if (download && href) {
+      e.preventDefault();
+      const a = document.createElement("a");
+      a.href = href;
+      a.download = download;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  };
 
   return (
     <MotionTag
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className={classes}
-      onClick={onClick}
+      onClick={handleClick}
       {...extraProps}
     >
       {children}
